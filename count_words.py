@@ -7,7 +7,6 @@ The first part of the coding challenge is to implement your own version of Word 
 
 __author__ = 'grodrigues'
 
-
 import multiprocessing as mp
 from collections import defaultdict
 from os import listdir
@@ -37,31 +36,10 @@ def serial_count(input_directory, printFreq=0):
                 words = line.lower().split()
                 for word in words:
                     trueDict[word] +=1
-        if printFreq and i%printFreq == 0:
+        if printFreq and i%printFreq == 0 and i !=0:
             print "Doc Count: {0} \t Elapsed Time: {1}".format(i, time() - start)
     print "Doc Count: {0} \t Elapsed Time: {1}".format(i, time() - start)
     return trueDict
-
-def count_words(doc):
-    wordCounts = {} #i'd like to use default dict, but this presents problems with multiprocessing Pool.map func
-    with open(testDir+doc) as f:
-        for line in f:
-            words = line.lower().split()
-            for word in words:
-                if word in wordCounts:
-                    wordCounts[word] +=1
-                else:
-                    wordCounts[word] = 1
-    return wordCounts
-
-def parallel_count(input_directory):
-    print "Counting the words in each document in parallel..."
-    g = listdir(input_directory)
-    multi_pool = mp.Pool(processes = NUMPROCESSORS) #use 4 processes for now
-    word_counts_by_doc = multi_pool.map(count_words, g)
-    print len(word_counts_by_doc), ' is the number of dictionaries used'
-    return merge_count_dictionaries(word_counts_by_doc)
-   
 
 def count_parallel(docs):
     wordCounts = {}
@@ -83,7 +61,7 @@ def merge_count_dictionaries(list_of_count_dictionaries):
             trueDict[word] += wordCountDict[word]
     return trueDict
 
-def parallel_count_apply(input_directory):
+def parallel_count(input_directory):
     print "Counting the words in each document in parallel..."
     g = listdir(input_directory)
     total_files = len(g)
@@ -97,9 +75,10 @@ def parallel_count_apply(input_directory):
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == 'par':
+    inArgs = sys.argv
+    if len(inArgs)>1 and inArgs[1] == 'par':
         start = time()
-        parWordCount = parallel_count_apply(testDir)
+        parWordCount = parallel_count(testDir)
         end = time()
         print end - start, 'total time elapsed for parallel processing'
     
@@ -113,4 +92,3 @@ if __name__ == "__main__":
     except:
         pass
 
-"adding some junk at the end to test"
