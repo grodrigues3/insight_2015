@@ -1,0 +1,10 @@
+
+
+Clear cache bash command:
+sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+
+Serial Processing (not cached):
+Avg Runtime My Machine: 83.21 secs
+
+Parallel Process (not cached):
+Avg Runtime My Machine: 55.32 secs
