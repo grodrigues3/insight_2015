@@ -112,3 +112,5 @@ if __name__ == "__main__":
         print  len(wordCounts), len(parWordCount)
     except:
         pass
+
+"adding some junk at the end to test"
