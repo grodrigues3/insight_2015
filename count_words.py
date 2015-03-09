@@ -14,6 +14,7 @@ __author__ = 'grodrigues'
 import multiprocessing as mp
 from collections import defaultdict
 from os import listdir
+from string import maketrans, translate, punctuation
 from time import time
 import pdb
 import sys
@@ -75,9 +76,12 @@ def count_parallel(dir_and_docs):
     """
     input_directory, docs = dir_and_docs
     wordCounts = {}
+    #an empty translate table since we're going to use the translate for its [deletechars] param
+    transTable = maketrans("","") 
     for doc in docs:
         with open(input_directory + doc) as f:
             for line in f:
+                line = line.translate(transTable, punctuation)
                 words = line.lower().split()
                 for word in words:
                     if word in wordCounts:
