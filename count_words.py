@@ -32,6 +32,7 @@ def serial_count(input_directory, printFreq=0):
     except:
         print "Could not access the input directory (wc_input).\n Exiting."
         exit(0)
+
     trueDict = defaultdict(lambda: 0)
     for i,fn in enumerate(g):
         with open(input_directory+fn) as f:
@@ -50,8 +51,14 @@ def serial_count(input_directory, printFreq=0):
 
 def parallel_count(input_directory):
     print "Counting the words in each document in parallel..."
-    g = listdir(input_directory)
+    try:
+        g = listdir(input_directory)
+    except:
+        print "Could not access the input directory (wc_input).\n Exiting."
+        exit(0)
+
     total_files = len(g)
+    print "\tGoing to get word counts for documents in all {0} files in {1}".format(total_files, input_directory)
     files_per = total_files*1. / NUMPROCESSORS
     inArgs = []
     for i in range(NUMPROCESSORS):
@@ -101,6 +108,7 @@ def write_to_file(countDict, output_filename="./wc_output/wc_result.txt"):
     @param countDict: a dictinary containing the word-> count mappings
     @param output_filename: the name of the file to be written to
     """
+    print "\tWriting the counts to {0}".format(output_filename)
     with open(output_filename, 'w') as f:
         for word in sorted(countDict):
             f.write("{0}\t{1}\n".format(word, countDict[word]) )
@@ -108,7 +116,7 @@ def write_to_file(countDict, output_filename="./wc_output/wc_result.txt"):
 if __name__ == "__main__":
     inputArgs = sys.argv
     if len(inputArgs) <= 1:
-        print "ERROR: Please supply both an input directory (e.g ./wc_input) and an output file (e.g. ./wc_output/wc_result.txt)"
+        print "ERROR: Please supply both an input directory (e.g ./wc_input) and an output file (e.g. ./wc_output/wc_result.txt)\n"
         exit(0)
 
     input_dir = inputArgs[1]

@@ -104,10 +104,11 @@ class MedianKeeper:
          
 
 def get_median_for_files(input_dir, output_file):
-    print "Calculating the median words per line for all files in {0}"\
-            " and writing the output to {1} ".format(input_dir, output_file)
+    print "Calculating the median words per line for all files in {0}".format(input_dir)
     try:
         input_files = os.listdir(input_dir)
+        print "\t{0} files are going to be used in the median line length calculation".format(len(input_files))
+        print"\t Writing the output to {0} ".format(output_file)
         with open(output_file, 'w') as outFile:
             orderedFiles = sorted(input_files)
             M = MedianKeeper()
@@ -115,7 +116,8 @@ def get_median_for_files(input_dir, output_file):
                 try:
                     with open(input_dir+filename) as f:
                         for line in f:
-                            M.add_element(len(line))
+                            numWords = len(line.split())
+                            M.add_element(numWords)
                             myMed = M.get_median()
                             outFile.write(str(myMed) + "\n")
                             #assert M.get_median() == median(someList)
