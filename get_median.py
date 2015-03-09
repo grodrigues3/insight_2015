@@ -120,9 +120,8 @@ def get_median_for_files(input_dir, output_file):
                             M.add_element(numWords)
                             myMed = M.get_median()
                             outFile.write(str(myMed) + "\n")
-                            #assert M.get_median() == median(someList)
                 except:
-                    print "Couldn't open the file"
+                    print "When calculating running median, couldn't open the file: {0}. Proceeding with remaining files".format(filename)
 
     except:
         import traceback
