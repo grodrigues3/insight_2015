@@ -1,9 +1,39 @@
 #!/usr/bin/python
+"""
+
+Insight Data Engineering Coding Challenge
+The second part of the coding challenge is to implement a method of
+easily keeping track of the median of a (streaming) list of elements being passed in.
+"""
+
+__author__ = 'grodrigues'
+
+###############################################
 
 import heapq, pdb
-from numpy import median, random
+import sys
+import os
+from numpy import median
 
 class MedianKeeper:
+    """
+    A class that can be use to keep track of the median of a streaming input of numbers
+    It works using two heaps as described in numerous algorithms textbooks and in the coursera
+    Introduction to Algorithms Course.
+
+    Let n be the number of elements we've seen so far
+
+    1. The first heap is a max heap and contains the n/2 smallest elements.
+    2. The second heap is a min heap and contains the n/2 largest elements
+
+    Whenever we add a new element, we add it the heap it belongs to and we rebalance
+    the two heaps so that they each have half of the elements seen  (half+1 if the n is odd)
+    
+    USAGE:
+        get_median: returns the median so far
+        add_element(someNum): adds a number to one of the two heaps
+
+    """
     def __init__(self):
         self.lCount = 0
         self.hCount = 0
@@ -54,11 +84,14 @@ class MedianKeeper:
                 self._add_to_high(newElement)
             else:
                 self._add_to_low(newElement)
-        self.balance()
+        self._balance()
             
 
-    def balance(self):
-        if self.lCount >= self.hCount + 2: #get the biggest from the smallheap and add it to the big one (flip the sign first)
+    def _balance(self):
+        """
+        We only rebalance if one of the two heaps has 2 or more elements than the other
+        """
+        if self.lCount >= self.hCount + 2: 
             elementToMove = heapq.heappop(self.h_low) * -1 
             self.lCount -=1
             self._add_to_high(elementToMove)
@@ -70,28 +103,44 @@ class MedianKeeper:
         
          
 
-def test(testValues):
-    m = MedianKeeper()
-    errors = 0
-    for i,value in enumerate(testValues):
-        m.add_element(value)
-        my_median = m.get_median()
-        np_median = median(testValues[:i+1])
-        try:
-            assert(my_median == np_median)
-        except:
-            errors +=1
-    print "Testing Complete With {0} Errors\n".format(errors), "-"*30
+def get_median_for_files(input_dir, output_file):
+    print "Calculating the median words per line for all files in {0}"\
+            " and writing the output to {1} ".format(input_dir, output_file)
+    try:
+        input_files = os.listdir(input_dir)
+        with open(output_file, 'w') as outFile:
+            orderedFiles = sorted(input_files)
+            M = MedianKeeper()
+            for filename in orderedFiles:
+                try:
+                    with open(input_dir+filename) as f:
+                        for line in f:
+                            M.add_element(len(line))
+                            myMed = M.get_median()
+                            outFile.write(str(myMed) + "\n")
+                            #assert M.get_median() == median(someList)
+                except:
+                    print "Couldn't open the file"
+
+    except:
+        import traceback
+        traceback.print_exc()
+        print "Median ERROR: couldn't access the input directory provided"
+        exit(0)
+
 
 if __name__ == "__main__":
-    test_0 = [4,5,4,5]
-    test_1 = range(100)
-    test_2 = random.randint(-100, 100, 1000)
+    inputArgs = sys.argv
 
-    test(test_0)
-    test(test_1)
-    test(test_2)
-
+    if len(inputArgs) < 3:
+        print "Warning: Either an input directory (e.g ./wc_input) or an output file (e.g. ./wc_output/wc_result.txt) was not specified."
+        print "Using the default values instead"
+        input_dir = './wc_input/'
+        output_file = "./wc_output/med_result.txt"
+    else:
+        input_dir = inputArgs[1]
+        output_file = inputArgs[2]
+    get_median_for_files(input_dir, output_file)
 
 
 
